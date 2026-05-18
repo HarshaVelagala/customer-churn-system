@@ -129,40 +129,4 @@ customer-churn-system/
 
 **Top churn predictors:** Months Inactive, Total Transaction Count Change, Contacts Count, Late Payments, Digital Logins
 
----
 
-## 📝 Resume Description
-
-### ATS-Friendly Bullet Points
-
-- Architected end-to-end **customer churn prediction platform** processing 5,000+ credit card customer records using **PySpark ETL pipelines**, **XGBoost ML** (89.8% accuracy, 95.2% AUC), and **KMeans segmentation**, reducing simulated revenue-at-risk identification time by 70%
-- Engineered **GenAI-powered retention advisor** integrating **Claude AI API** to generate personalized retention strategies, increasing customer engagement simulation by 40% through data-driven recommendations
-- Built **6-page interactive Streamlit dashboard** with real-time churn prediction forms, SQL analytics (SQLite/Hive-style), PCA cluster visualizations, and correlation heatmaps for executive decision-making
-- Implemented **feature engineering pipeline** with 25+ engineered features including spend velocity, CLV proxy, engagement scores, and window functions across 4 card segments
-- Applied **production ML practices**: stratified train-test split, StandardScaler preprocessing, model serialization with Joblib, JSON metrics persistence, and Docker containerization
-
-### GitHub Description
-> Enterprise churn prediction system for credit card companies. XGBoost (89.8% acc, 95.2% AUC) + KMeans segmentation + GenAI retention advisor + 6-page Streamlit dashboard. Built for AmEx/JPMorgan-style analytics roles.
-
-### LinkedIn Post
-Excited to share my latest project: **Customer Churn Prediction & Retention Intelligence System** 💳
-
-Built a production-grade analytics platform that predicts which credit card customers are at risk of churning — the kind of system used at American Express, JPMorgan, and Mastercard.
-
-🔬 **Tech Stack:** PySpark · XGBoost · KMeans · Claude AI · Streamlit · SQLite  
-📊 **Results:** 89.8% accuracy · 95.2% ROC-AUC · 5,000 customer profiles  
-🤖 **GenAI:** AI-powered personalized retention strategies  
-📈 **Dashboard:** 6-page interactive analytics platform  
-
-#DataScience #MachineLearning #Fintech #Python #Analytics
-
-### STAR Interview Answer
-**S**ituation: Credit card companies lose millions when customers churn, and identifying at-risk customers early is critical.  
-**T**ask: Build a scalable system that predicts churn, segments customers, and generates actionable retention strategies.  
-**A**ction: Engineered 25+ features from transaction data using PySpark, trained XGBoost with 89.8% accuracy, built KMeans segmentation for 4 customer profiles, integrated Claude AI for personalized retention recommendations, and deployed a 6-page Streamlit dashboard.  
-**R**esult: System identifies high-value at-risk customers with 95.2% AUC, enables data-driven retention targeting, and generates AI-personalized outreach strategies — replicating enterprise-level churn management used at top financial institutions.
-
----
-
-## 📄 License
-MIT © 2024
