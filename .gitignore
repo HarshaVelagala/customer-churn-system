@@ -1,9 +1,16 @@
+# Local git ignores
 __pycache__/
 *.pyc
-*.pkl
-*.db
+*.pyo
+.venv/
 .env
+.pytest_cache/
 .DS_Store
 models/
-data/customers.csv
-data/customers_engineered.csv
+database/
+data/raw/
+data/processed/
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!models/.gitkeep
+!database/.gitkeep
