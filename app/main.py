@@ -19,9 +19,8 @@ PAGES = {
 }
 
 
-st.set_page_config(page_title="Customer Churn & Retention Intelligence", layout="wide")
+st.set_page_config(page_title="Customer Churn Intelligence", layout="wide")
 st.sidebar.title("Customer Churn System")
 selection = st.sidebar.radio("Navigate", list(PAGES.keys()))
-
 module = __import__(PAGES[selection], fromlist=["*"])
 module.app()

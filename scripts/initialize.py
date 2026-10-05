@@ -1,53 +1,39 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
-import pandas as pd
+ROOT = Path(__file__).resolve().parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-from src.analytics.sql_analytics import ensure_database, query_database
 from src.ai.retention_advisor import generate_retention_strategy
-from src.config import BASE_DIR, DATABASE_PATH, PROCESSED_DATA_PATH, MODEL_DIR
-from src.data.loader import load_customer_data
-from src.models.inference import assign_segments, load_segmentation_model
+from src.analytics.sql_analytics import ensure_database
+from src.config import DATABASE_PATH, PROCESSED_DATA_PATH, ensure_directories
+from src.data.generator import generate_customer_data
+from src.features.engineering import train_model
+from src.models.segmentation import train_segmentation_model
 
 
-def initialize_system(n_customers: int = 5000, random_seed: int = 42) -> dict:
-    from src.data.generator import generate_customer_data
-    from src.models.churn_model import predict_batch
-    from src.models.segmentation import train_segmentation_model
-    from src.features.engineering import engineer_features
-    from src.models.churn_model import train_model
+def initialize() -> dict:
+    ensure_directories()
+    if not PROCESSED_DATA_PATH.exists():
+        generate_customer_data(5000, seed=42, output_path=PROCESSED_DATA_PATH)
 
-    data_path = PROCESSED_DATA_PATH
-    if not data_path.exists():
-        df = generate_customer_data(n_customers=n_customers, seed=random_seed, output_path=data_path)
-    else:
-        df = pd.read_csv(data_path)
+    data = __import__("pandas").read_csv(PROCESSED_DATA_PATH)
+    _, _, metrics = train_model(random_seed=42)
+    train_segmentation_model(data, n_clusters=4, random_seed=42)
+    ensure_database(PROCESSED_DATA_PATH, DATABASE_PATH)
 
-    model, preprocessor, metrics = train_model(random_seed=random_seed)
-
-    segmentation_model = train_segmentation_model(df)
-    ensure_database(data_path, DATABASE_PATH)
-
-    analytics = query_database(DATABASE_PATH, "SELECT COUNT(*) AS total_customers, SUM(churn_label) AS churned_customers FROM customers")
-    summary = {
-        "dataset_size": len(df),
-        "model_type": "XGBoost",
-        "roc_auc": metrics.get("roc_auc"),
-        "accuracy": metrics.get("accuracy"),
-        "segments": 4,
-        "database_ready": True,
-        "analytics": analytics.to_dict(orient="records")[0],
-    }
     print("SYSTEM INITIALIZATION COMPLETE")
-    print(f"Dataset: {summary['dataset_size']} customers")
-    print(f"Model: {summary['model_type']}")
-    print(f"ROC-AUC: {summary['roc_auc']:.4f}")
-    print(f"Accuracy: {summary['accuracy']:.4f}")
+    print(f"Dataset: {len(data)} customers")
+    print("Model: XGBoost")
+    print(f"ROC-AUC: {metrics['roc_auc']:.4f}")
+    print(f"Accuracy: {metrics['accuracy']:.4f}")
     print("Segments: 4")
     print("Database: Ready")
-    return summary
+    return {"status": "ok", "dataset_size": len(data), "model": "XGBoost"}
 
 
 if __name__ == "__main__":
-    initialize_system()
+    initialize()

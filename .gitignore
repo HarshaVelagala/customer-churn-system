@@ -1,16 +1,9 @@
-# Local git ignores
+# Local ignore rules
 __pycache__/
 *.pyc
 *.pyo
 .venv/
 .env
 .pytest_cache/
-.DS_Store
-models/
-database/
-data/raw/
-data/processed/
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!models/.gitkeep
-!database/.gitkeep
+*.joblib
+*.db

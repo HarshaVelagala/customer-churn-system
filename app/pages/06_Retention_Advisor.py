@@ -1,12 +1,5 @@
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-
 import streamlit as st
 
 from src.ai.retention_advisor import generate_retention_strategy
@@ -20,8 +13,10 @@ def app() -> None:
         "late_payments": st.number_input("Late Payments", 0, 10, 1),
         "digital_logins": st.number_input("Digital Logins", 0, 100, 10),
     }
-    prediction = {"churn_probability": st.slider("Churn Probability", 0.0, 1.0, 0.65), "risk_level": st.selectbox("Risk Level", ["Low", "Medium", "High", "Critical"])}
-
+    prediction = {
+        "churn_probability": st.slider("Churn Probability", 0.0, 1.0, 0.65),
+        "risk_level": st.selectbox("Risk Level", ["Low", "Medium", "High", "Critical"]),
+    }
     if st.button("Generate Strategy"):
         strategy = generate_retention_strategy(customer, prediction)
         st.json(strategy)

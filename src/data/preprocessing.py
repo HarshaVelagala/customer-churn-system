@@ -39,8 +39,6 @@ CATEGORICAL_FEATURES = [
     "marital_status",
 ]
 
-TARGET_COLUMN = "churn"
-
 
 def build_preprocessor() -> ColumnTransformer:
     numeric_transformer = Pipeline(
@@ -55,7 +53,6 @@ def build_preprocessor() -> ColumnTransformer:
             ("onehot", OneHotEncoder(handle_unknown="ignore")),
         ]
     )
-
     preprocessor = ColumnTransformer(
         transformers=[
             ("num", numeric_transformer, NUMERIC_FEATURES),
@@ -69,13 +66,13 @@ def save_preprocessor(preprocessor: ColumnTransformer, metadata_path: str | Path
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     joblib.dump(preprocessor, MODEL_DIR / "preprocessor.joblib")
     if metadata_path is not None:
-        meta = Path(metadata_path)
-        meta.parent.mkdir(parents=True, exist_ok=True)
-        meta.write_text(json.dumps({"numeric": NUMERIC_FEATURES, "categorical": CATEGORICAL_FEATURES}, indent=2), encoding="utf-8")
+        path = Path(metadata_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps({"numeric": NUMERIC_FEATURES, "categorical": CATEGORICAL_FEATURES}, indent=2), encoding="utf-8")
 
 
 def load_preprocessor() -> ColumnTransformer | None:
-    model_path = MODEL_DIR / "preprocessor.joblib"
-    if not model_path.exists():
+    path = MODEL_DIR / "preprocessor.joblib"
+    if not path.exists():
         return None
-    return joblib.load(model_path)
+    return joblib.load(path)

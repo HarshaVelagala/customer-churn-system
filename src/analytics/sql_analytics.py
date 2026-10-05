@@ -1,32 +1,57 @@
 from __future__ import annotations
 
-import sqlite3
 from pathlib import Path
 
+import joblib
 import pandas as pd
+from sklearn.cluster import KMeans
 
-from src.config import BASE_DIR, DATABASE_PATH, PROCESSED_DATA_PATH
+from src.config import MODEL_DIR
+
+SEGMENT_LABELS = {
+    0: "Loyal",
+    1: "High Value",
+    2: "Low Engagement",
+    3: "At Risk",
+}
+
+SEGMENT_COLUMNS = [
+    "age",
+    "credit_limit",
+    "months_on_book",
+    "months_inactive",
+    "contacts_count",
+    "total_transaction_count",
+    "total_transaction_amount",
+    "utilization_ratio",
+    "late_payments",
+    "digital_logins",
+    "customer_service_calls",
+]
 
 
-def ensure_database(data_path: str | Path | None = None, db_path: str | Path | None = None) -> Path:
-    data = Path(data_path) if data_path is not None else PROCESSED_DATA_PATH
-    target = Path(db_path) if db_path is not None else DATABASE_PATH
-    target.parent.mkdir(parents=True, exist_ok=True)
-
-    frame = pd.read_csv(data)
-    connection = sqlite3.connect(target)
-    frame.to_sql("customers", connection, if_exists="replace", index=False)
-    connection.execute(
-        "CREATE INDEX IF NOT EXISTS idx_customers_churn ON customers (churn_label)",
-    )
-    connection.commit()
-    connection.close()
-    return target
+def train_segmentation_model(df: pd.DataFrame, n_clusters: int = 4, random_seed: int = 42) -> KMeans:
+    features = df[SEGMENT_COLUMNS].fillna(0)
+    model = KMeans(n_clusters=n_clusters, random_state=random_seed, n_init=10)
+    model.fit(features)
+    MODEL_DIR.mkdir(parents=True, exist_ok=True)
+    joblib.dump(model, MODEL_DIR / "segmentation_model.joblib")
+    return model
 
 
-def query_database(db_path: str | Path | None = None, query: str = "SELECT * FROM customers") -> pd.DataFrame:
-    target = Path(db_path) if db_path is not None else DATABASE_PATH
-    connection = sqlite3.connect(target)
-    result = pd.read_sql_query(query, connection)
-    connection.close()
-    return result
+def load_segmentation_model() -> KMeans | None:
+    path = MODEL_DIR / "segmentation_model.joblib"
+    if not path.exists():
+        return None
+    return joblib.load(path)
+
+
+def assign_segments(df: pd.DataFrame, model: KMeans | None = None) -> pd.DataFrame:
+    if model is None:
+        model = load_segmentation_model()
+    if model is None:
+        raise FileNotFoundError("Segmentation model not found. Run `python main.py` to initialize the system.")
+    output = df.copy()
+    output["segment_id"] = model.predict(output[SEGMENT_COLUMNS].fillna(0))
+    output["segment"] = output["segment_id"].map(SEGMENT_LABELS)
+    return output

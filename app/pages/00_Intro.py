@@ -5,6 +5,5 @@ import streamlit as st
 
 def app() -> None:
     st.title("Customer Churn Prediction & Retention Intelligence System")
-    st.caption("Production-style churn analytics dashboard")
-
-    st.write("This app is ready. Run the initialization pipeline first with `python main.py`.")
+    st.caption("Built for reliable churn prediction and retention planning.")
+    st.write("Run `python main.py` to initialize the dataset, model, and analytics database.")
